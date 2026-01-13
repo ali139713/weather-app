@@ -4,6 +4,10 @@
 
 import { weatherApiService } from '../weatherApi';
 
+// Mock fetch globally
+const mockFetch = jest.fn();
+(global as any).fetch = mockFetch;
+
 describe('WeatherApiService', () => {
   beforeEach(() => {
     jest.clearAllMocks();
@@ -19,7 +23,7 @@ describe('WeatherApiService', () => {
         name: 'Test City',
       };
 
-      global.fetch = jest.fn().mockResolvedValue({
+      mockFetch.mockResolvedValue({
         ok: true,
         json: jest.fn().mockResolvedValue(mockResponse),
       });
@@ -27,13 +31,13 @@ describe('WeatherApiService', () => {
       const result = await weatherApiService.getCurrentWeather(0, 0);
 
       expect(result).toEqual(mockResponse);
-      expect(global.fetch).toHaveBeenCalledWith(
+      expect(mockFetch).toHaveBeenCalledWith(
         expect.stringContaining('weather?lat=0&lon=0'),
       );
     });
 
     it('should throw error when API request fails', async () => {
-      global.fetch = jest.fn().mockResolvedValue({
+      mockFetch.mockResolvedValue({
         ok: false,
         status: 404,
         json: jest.fn().mockResolvedValue({ message: 'City not found' }),
@@ -53,7 +57,7 @@ describe('WeatherApiService', () => {
         city: { id: 1, name: 'Test City', coord: { lat: 0, lon: 0 }, country: 'US' },
       };
 
-      global.fetch = jest.fn().mockResolvedValue({
+      mockFetch.mockResolvedValue({
         ok: true,
         json: jest.fn().mockResolvedValue(mockResponse),
       });
@@ -61,7 +65,7 @@ describe('WeatherApiService', () => {
       const result = await weatherApiService.getForecast(0, 0);
 
       expect(result).toEqual(mockResponse);
-      expect(global.fetch).toHaveBeenCalledWith(
+      expect(mockFetch).toHaveBeenCalledWith(
         expect.stringContaining('forecast?lat=0&lon=0'),
       );
     });
