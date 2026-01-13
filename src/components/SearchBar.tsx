@@ -1,8 +1,8 @@
 /**
- * SearchBar component for searching cities
+ * SearchBar component with debounced search and city suggestions
  */
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   TextInput,
@@ -11,9 +11,12 @@ import {
   Text,
 } from 'react-native';
 import { useTheme } from '../context/ThemeContext';
+import { useDebounce } from '../hooks/useDebounce';
+import { geocodingService, CitySuggestion } from '../services/geocoding';
+import { CitySuggestions } from './CitySuggestions';
 
 interface SearchBarProps {
-  onSearch: (query: string) => void;
+  onSearch: (cityName: string) => void;
   placeholder?: string;
   onFocus?: () => void;
 }
@@ -25,36 +28,94 @@ export const SearchBar: React.FC<SearchBarProps> = ({
 }) => {
   const theme = useTheme();
   const [query, setQuery] = useState('');
+  const [suggestions, setSuggestions] = useState<CitySuggestion[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [showSuggestions, setShowSuggestions] = useState(false);
 
-  const handleSearch = () => {
-    if (query.trim()) {
-      onSearch(query.trim());
+  const debouncedQuery = useDebounce(query, 500);
+
+  useEffect(() => {
+    const fetchSuggestions = async () => {
+      if (debouncedQuery.trim().length >= 2) {
+        setLoading(true);
+        try {
+          const results = await geocodingService.getCitySuggestions(debouncedQuery);
+          setSuggestions(results);
+          setShowSuggestions(true);
+        } catch (error) {
+          setSuggestions([]);
+        } finally {
+          setLoading(false);
+        }
+      } else {
+        setSuggestions([]);
+        setShowSuggestions(false);
+      }
+    };
+
+    fetchSuggestions();
+  }, [debouncedQuery]);
+
+  const handleSearch = (cityName?: string) => {
+    const searchTerm = cityName || query.trim();
+    if (searchTerm) {
+      onSearch(searchTerm);
       setQuery('');
+      setSuggestions([]);
+      setShowSuggestions(false);
     }
   };
 
+  const handleSelectSuggestion = (city: CitySuggestion) => {
+    handleSearch(city.name);
+  };
+
   return (
-    <View
-      style={[
-        styles.container,
-        { backgroundColor: theme.colors.background },
-      ]}>
-      <TextInput
-        style={[styles.input, { color: theme.colors.text }]}
-        placeholder={placeholder}
-        placeholderTextColor={theme.colors.textSecondary}
-        value={query}
-        onChangeText={setQuery}
-        onSubmitEditing={handleSearch}
-        onFocus={onFocus}
-        returnKeyType="search"
-      />
-      <TouchableOpacity
-        style={[styles.button, { backgroundColor: theme.colors.primary }]}
-        onPress={handleSearch}
-        disabled={!query.trim()}>
-        <Text style={styles.buttonText}>Search</Text>
-      </TouchableOpacity>
+    <View>
+      <View
+        style={[
+          styles.container,
+          { backgroundColor: theme.colors.background },
+        ]}>
+        <TextInput
+          style={[styles.input, { color: theme.colors.text }]}
+          placeholder={placeholder}
+          placeholderTextColor={theme.colors.textSecondary}
+          value={query}
+          onChangeText={setQuery}
+          onSubmitEditing={() => handleSearch()}
+          onFocus={() => {
+            if (onFocus) onFocus();
+            if (suggestions.length > 0 || loading) {
+              setShowSuggestions(true);
+            }
+          }}
+          onBlur={() => {
+            setTimeout(() => setShowSuggestions(false), 200);
+          }}
+          returnKeyType="search"
+        />
+        <TouchableOpacity
+          style={[
+            styles.button,
+            {
+              backgroundColor: theme.colors.primary,
+              opacity: query.trim() ? 1 : 0.5,
+            },
+          ]}
+          onPress={() => handleSearch()}
+          disabled={!query.trim()}>
+          <Text style={styles.buttonText}>Search</Text>
+        </TouchableOpacity>
+      </View>
+      {showSuggestions && (suggestions.length > 0 || loading) && (
+        <CitySuggestions
+          suggestions={suggestions}
+          loading={loading}
+          onSelect={handleSelectSuggestion}
+          onClose={() => setShowSuggestions(false)}
+        />
+      )}
     </View>
   );
 };
@@ -79,14 +140,12 @@ const styles = StyleSheet.create({
   input: {
     flex: 1,
     fontSize: 16,
-    color: '#000',
     paddingVertical: 8,
   },
   button: {
     marginLeft: 12,
     paddingHorizontal: 16,
     paddingVertical: 8,
-    backgroundColor: '#007AFF',
     borderRadius: 8,
     justifyContent: 'center',
   },
