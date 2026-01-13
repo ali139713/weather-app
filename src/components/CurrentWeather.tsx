@@ -148,9 +148,10 @@ const styles = StyleSheet.create({
     marginBottom: 24,
   },
   city: {
-    fontSize: 28,
-    fontWeight: 'bold',
+    fontSize: 30,
+    fontWeight: '800',
     marginBottom: 4,
+    letterSpacing: -0.5,
   },
   date: {
     fontSize: 14,

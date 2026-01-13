@@ -1,9 +1,9 @@
 /**
- * Reusable Card component for displaying content
+ * Reusable Card component for displaying content with premium styling
  */
 
 import React from 'react';
-import { View, StyleSheet, ViewStyle } from 'react-native';
+import { View, StyleSheet, ViewStyle, Platform } from 'react-native';
 import { useTheme } from '../context/ThemeContext';
 
 interface CardProps {
@@ -17,7 +17,11 @@ export const Card: React.FC<CardProps> = ({ children, style }) => {
     <View
       style={[
         styles.card,
-        { backgroundColor: theme.colors.surface },
+        {
+          backgroundColor: theme.colors.surface,
+          shadowColor: theme.isDark ? '#000' : '#000',
+          borderColor: theme.colors.border,
+        },
         style,
       ]}>
       {children}
@@ -27,16 +31,22 @@ export const Card: React.FC<CardProps> = ({ children, style }) => {
 
 const styles = StyleSheet.create({
   card: {
-    borderRadius: 12,
-    padding: 16,
+    borderRadius: 16,
+    padding: 20,
     marginVertical: 8,
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
+    borderWidth: StyleSheet.hairlineWidth,
+    ...Platform.select({
+      ios: {
+        shadowOffset: {
+          width: 0,
+          height: 4,
+        },
+        shadowOpacity: 0.15,
+        shadowRadius: 12,
+      },
+      android: {
+        elevation: 6,
+      },
+    }),
   },
 });
