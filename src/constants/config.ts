@@ -7,7 +7,7 @@
 
 export const WEATHER_API_BASE_URL = 'https://api.openweathermap.org/data/2.5';
 // TODO: Replace with your OpenWeatherMap API key
-export const WEATHER_API_KEY = 'YOUR_API_KEY_HERE';
+export const WEATHER_API_KEY = '0f785351fab0c4e0510d8f8b5e124375';
 
 export const STORAGE_KEYS = {
   CURRENT_WEATHER: '@weather_app:current_weather',
