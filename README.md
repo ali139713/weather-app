@@ -1,97 +1,194 @@
-This is a new [**React Native**](https://reactnative.dev) project, bootstrapped using [`@react-native-community/cli`](https://github.com/react-native-community/cli).
+# Weather App
 
-# Getting Started
+A React Native mobile weather forecast application that displays current weather and a 5-day forecast for the user's location or any searched city.
 
-> **Note**: Make sure you have completed the [Set Up Your Environment](https://reactnative.dev/docs/set-up-your-environment) guide before proceeding.
+## Features
 
-## Step 1: Start Metro
+### Core Features
+- ✅ Current weather display with temperature, condition, humidity, and wind speed
+- ✅ 5-day weather forecast with daily high/low temperatures and weather icons
+- ✅ Automatic geolocation detection
+- ✅ City search functionality
+- ✅ Loading states and error handling with user-friendly UI feedback
+- ✅ Offline support with cached weather data (last fetched data available offline)
 
-First, you will need to run **Metro**, the JavaScript build tool for React Native.
+### Bonus Features
+- ✅ Dark mode support (follows system theme)
+- ✅ Pull-to-refresh functionality
+- ✅ Favorite cities for quick access
+- ✅ Hourly forecast view for the current day
+- ✅ Weather icons with emoji representation
+- ✅ Smooth animations and transitions
 
-To start the Metro dev server, run the following command from the root of your React Native project:
+## Prerequisites
 
-```sh
-# Using npm
-npm start
+Before you begin, ensure you have met the following requirements:
 
-# OR using Yarn
-yarn start
+- Node.js (>= 20)
+- npm or yarn
+- React Native development environment set up:
+  - For iOS: Xcode and CocoaPods
+  - For Android: Android Studio and Android SDK
+- OpenWeatherMap API key (free tier available at [openweathermap.org](https://openweathermap.org/api))
+
+## Installation
+
+1. Clone the repository:
+```bash
+git clone <repository-url>
+cd weather-app
 ```
 
-## Step 2: Build and run your app
-
-With Metro running, open a new terminal window/pane from the root of your React Native project, and use one of the following commands to build and run your Android or iOS app:
-
-### Android
-
-```sh
-# Using npm
-npm run android
-
-# OR using Yarn
-yarn android
+2. Install dependencies:
+```bash
+npm install
 ```
 
-### iOS
+3. Set up environment variables:
+   - Create a `.env` file in the root directory
+   - Add your OpenWeatherMap API key:
+   ```
+   WEATHER_API_KEY=your_api_key_here
+   ```
+   - Note: For React Native, you may need to use `react-native-config` or set the API key directly in `src/constants/config.ts` for now
 
-For iOS, remember to install CocoaPods dependencies (this only needs to be run on first clone or after updating native deps).
-
-The first time you create a new project, run the Ruby bundler to install CocoaPods itself:
-
-```sh
+4. For iOS, install CocoaPods dependencies:
+```bash
+cd ios
 bundle install
-```
-
-Then, and every time you update your native dependencies, run:
-
-```sh
 bundle exec pod install
+cd ..
 ```
 
-For more information, please visit [CocoaPods Getting Started guide](https://guides.cocoapods.org/using/getting-started.html).
+## Running the App
 
-```sh
-# Using npm
+### Start Metro Bundler
+```bash
+npm start
+```
+
+### Run on iOS
+```bash
 npm run ios
-
-# OR using Yarn
-yarn ios
 ```
 
-If everything is set up correctly, you should see your new app running in the Android Emulator, iOS Simulator, or your connected device.
+### Run on Android
+```bash
+npm run android
+```
 
-This is one way to run your app — you can also build it directly from Android Studio or Xcode.
+## Project Structure
 
-## Step 3: Modify your app
+```
+weather-app/
+├── src/
+│   ├── components/          # Reusable UI components
+│   │   ├── Button.tsx
+│   │   ├── Card.tsx
+│   │   ├── CurrentWeather.tsx
+│   │   ├── Error.tsx
+│   │   ├── FavoriteButton.tsx
+│   │   ├── FavoritesList.tsx
+│   │   ├── ForecastList.tsx
+│   │   ├── HourlyForecast.tsx
+│   │   ├── Loading.tsx
+│   │   ├── SearchBar.tsx
+│   │   └── WeatherIcon.tsx
+│   ├── context/             # React Context providers
+│   │   ├── ThemeContext.tsx
+│   │   └── WeatherContext.tsx
+│   ├── hooks/               # Custom React hooks
+│   │   └── useFavorites.ts
+│   ├── screens/             # Screen components
+│   │   └── WeatherScreen.tsx
+│   ├── services/            # API and service layers
+│   │   ├── geolocation.ts
+│   │   ├── storage.ts
+│   │   └── weatherApi.ts
+│   ├── types/               # TypeScript type definitions
+│   │   └── weather.ts
+│   ├── utils/               # Utility functions
+│   │   ├── dateUtils.ts
+│   │   └── forecastUtils.ts
+│   └── constants/           # App constants
+│       └── config.ts
+├── App.tsx                  # Main app entry point
+└── package.json
+```
 
-Now that you have successfully run the app, let's make changes!
+## Architecture & Key Decisions
 
-Open `App.tsx` in your text editor of choice and make some changes. When you save, your app will automatically update and reflect these changes — this is powered by [Fast Refresh](https://reactnative.dev/docs/fast-refresh).
+### State Management
+- **Context API**: Used for global state management (weather data and theme)
+- **Local State**: React hooks (`useState`, `useEffect`) for component-level state
+- **Custom Hooks**: `useFavorites` for managing favorite cities
 
-When you want to forcefully reload, for example to reset the state of your app, you can perform a full reload:
+### Data Fetching & Caching
+- **API Service**: Centralized weather API service with error handling
+- **Offline Support**: AsyncStorage for caching weather data
+- **Cache Duration**: 5 minutes (configurable in `src/constants/config.ts`)
+- **Automatic Cache Loading**: App loads cached data on startup if available
 
-- **Android**: Press the <kbd>R</kbd> key twice or select **"Reload"** from the **Dev Menu**, accessed via <kbd>Ctrl</kbd> + <kbd>M</kbd> (Windows/Linux) or <kbd>Cmd ⌘</kbd> + <kbd>M</kbd> (macOS).
-- **iOS**: Press <kbd>R</kbd> in iOS Simulator.
+### Styling & Theming
+- **Theme Context**: Centralized theme management with dark mode support
+- **StyleSheet**: React Native StyleSheet for component styles
+- **Dynamic Theming**: Components adapt to light/dark mode automatically
 
-## Congratulations! :tada:
+### Component Design
+- **Small, Reusable Components**: Each component has a single responsibility
+- **Composition**: Components are composed to build complex UIs
+- **Type Safety**: Full TypeScript support with proper type definitions
 
-You've successfully run and modified your React Native App. :partying_face:
+### Error Handling
+- **Graceful Degradation**: App shows cached data if API fails
+- **User Feedback**: Clear error messages with retry functionality
+- **Loading States**: Proper loading indicators during data fetching
 
-### Now what?
+## API Configuration
 
-- If you want to add this new React Native code to an existing application, check out the [Integration guide](https://reactnative.dev/docs/integration-with-existing-apps).
-- If you're curious to learn more about React Native, check out the [docs](https://reactnative.dev/docs/getting-started).
+The app uses the OpenWeatherMap API. To get your API key:
 
-# Troubleshooting
+1. Sign up at [openweathermap.org](https://openweathermap.org/api)
+2. Get your free API key from the dashboard
+3. Add it to your environment variables or `src/constants/config.ts`
 
-If you're having issues getting the above steps to work, see the [Troubleshooting](https://reactnative.dev/docs/troubleshooting) page.
+**Note**: The free tier allows 60 calls per minute, which is sufficient for this app.
 
-# Learn More
+## Testing
 
-To learn more about React Native, take a look at the following resources:
+Run tests with:
+```bash
+npm test
+```
 
-- [React Native Website](https://reactnative.dev) - learn more about React Native.
-- [Getting Started](https://reactnative.dev/docs/environment-setup) - an **overview** of React Native and how setup your environment.
-- [Learn the Basics](https://reactnative.dev/docs/getting-started) - a **guided tour** of the React Native **basics**.
-- [Blog](https://reactnative.dev/blog) - read the latest official React Native **Blog** posts.
-- [`@facebook/react-native`](https://github.com/facebook/react-native) - the Open Source; GitHub **repository** for React Native.
+## Assumptions & Trade-offs
+
+### Assumptions
+- Users have location permissions enabled (app requests permission)
+- Internet connection available for initial data fetch (cached data available offline)
+- OpenWeatherMap API is accessible and responsive
+
+### Trade-offs
+1. **Emoji Icons**: Used emoji instead of icon libraries for simplicity and no additional dependencies
+2. **Context API vs Redux**: Chose Context API for simplicity given the app's size
+3. **AsyncStorage**: Used for offline caching (simple but sufficient for this use case)
+4. **No State Persistence Library**: Manual cache management for better control
+
+## Future Improvements
+
+- [ ] Add unit tests for all components and services
+- [ ] Implement weather map view
+- [ ] Add more detailed weather information (UV index, visibility, etc.)
+- [ ] Implement push notifications for weather alerts
+- [ ] Add weather history/charts
+- [ ] Support for multiple units (Celsius/Fahrenheit)
+- [ ] Add more animation effects
+- [ ] Implement weather widget for home screen
+
+## License
+
+This project is created for evaluation purposes.
+
+## Author
+
+Built as a test project for React Native Developer position evaluation.
