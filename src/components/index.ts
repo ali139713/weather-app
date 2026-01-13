@@ -3,3 +3,7 @@ export * from './Error';
 export * from './Button';
 export * from './Card';
 export * from './SearchBar';
+export * from './WeatherIcon';
+export * from './CurrentWeather';
+export * from './ForecastList';
+export * from './HourlyForecast';
