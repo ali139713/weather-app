@@ -245,36 +245,6 @@ Current test coverage includes:
 
 ## Screenshots
 
-To add screenshots to your README:
-
-1. **Take screenshots**:
-   - **iOS Simulator**: Press `Cmd + S` or go to Device → Screenshot
-   - **Android Emulator**: Click the camera icon in the toolbar, or use `adb shell screencap -p /sdcard/screenshot.png`
-
-2. **Save screenshots**:
-   - Create a `screenshots/` folder in the project root
-   - Save screenshots with descriptive names (e.g., `ios-main.png`, `android-dark-mode.png`)
-
-3. **Add to README**:
-   ```markdown
-   ## Screenshots
-   
-   ### iOS
-   <img src="screenshots/ios-main.png" width="300" alt="iOS Main Screen" />
-   <img src="screenshots/ios-dark.png" width="300" alt="iOS Dark Mode" />
-   
-   ### Android
-   <img src="screenshots/android-main.png" width="300" alt="Android Main Screen" />
-   <img src="screenshots/android-dark.png" width="300" alt="Android Dark Mode" />
-   ```
-
-**Recommended screenshots to include:**
-- Main weather screen (light mode)
-- Main weather screen (dark mode)
-- Search with suggestions
-- 5-day forecast view
-- Hourly forecast view
-
 ## Troubleshooting
 
 ### Metro Bundler Issues
