@@ -10,6 +10,7 @@ import {
   TouchableOpacity,
   Text,
 } from 'react-native';
+import { useTheme } from '../context/ThemeContext';
 
 interface SearchBarProps {
   onSearch: (query: string) => void;
@@ -22,6 +23,7 @@ export const SearchBar: React.FC<SearchBarProps> = ({
   placeholder = 'Search city...',
   onFocus,
 }) => {
+  const theme = useTheme();
   const [query, setQuery] = useState('');
 
   const handleSearch = () => {
@@ -32,11 +34,15 @@ export const SearchBar: React.FC<SearchBarProps> = ({
   };
 
   return (
-    <View style={styles.container}>
+    <View
+      style={[
+        styles.container,
+        { backgroundColor: theme.colors.background },
+      ]}>
       <TextInput
-        style={styles.input}
+        style={[styles.input, { color: theme.colors.text }]}
         placeholder={placeholder}
-        placeholderTextColor="#999"
+        placeholderTextColor={theme.colors.textSecondary}
         value={query}
         onChangeText={setQuery}
         onSubmitEditing={handleSearch}
@@ -44,7 +50,7 @@ export const SearchBar: React.FC<SearchBarProps> = ({
         returnKeyType="search"
       />
       <TouchableOpacity
-        style={styles.button}
+        style={[styles.button, { backgroundColor: theme.colors.primary }]}
         onPress={handleSearch}
         disabled={!query.trim()}>
         <Text style={styles.buttonText}>Search</Text>

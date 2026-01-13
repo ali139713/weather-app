@@ -7,3 +7,5 @@ export * from './WeatherIcon';
 export * from './CurrentWeather';
 export * from './ForecastList';
 export * from './HourlyForecast';
+export * from './FavoriteButton';
+export * from './FavoritesList';

@@ -12,6 +12,8 @@ import {
   Text,
 } from 'react-native';
 import { useWeather } from '../context/WeatherContext';
+import { useTheme } from '../context/ThemeContext';
+import { useFavorites } from '../hooks/useFavorites';
 import {
   CurrentWeather,
   ForecastList,
@@ -19,11 +21,13 @@ import {
   Loading,
   Error,
   SearchBar,
-  Button,
+  FavoriteButton,
+  FavoritesList,
 } from '../components';
 import { groupForecastByDay, getHourlyForecast } from '../utils';
 
 export const WeatherScreen: React.FC = () => {
+  const theme = useTheme();
   const {
     currentWeather,
     forecast,
@@ -34,6 +38,8 @@ export const WeatherScreen: React.FC = () => {
     refreshWeather,
     clearError,
   } = useWeather();
+  const { favorites, addFavorite, removeFavorite, isFavorite } =
+    useFavorites();
 
   useEffect(() => {
     if (!currentWeather) {
@@ -47,6 +53,20 @@ export const WeatherScreen: React.FC = () => {
 
   const handleRefresh = async () => {
     await refreshWeather();
+  };
+
+  const handleToggleFavorite = () => {
+    if (currentWeather) {
+      if (isFavorite(currentWeather.name)) {
+        removeFavorite(currentWeather.name);
+      } else {
+        addFavorite(currentWeather.name);
+      }
+    }
+  };
+
+  const handleSelectFavorite = async (cityName: string) => {
+    await fetchWeatherByCity(cityName);
   };
 
   const dailyForecasts = forecast ? groupForecastByDay(forecast.list) : [];
@@ -69,7 +89,7 @@ export const WeatherScreen: React.FC = () => {
   }
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { backgroundColor: theme.colors.background }]}>
       <ScrollView
         style={styles.scrollView}
         refreshControl={
@@ -77,19 +97,37 @@ export const WeatherScreen: React.FC = () => {
         }
         showsVerticalScrollIndicator={false}>
         <View style={styles.header}>
-          <Text style={styles.headerTitle}>Weather Forecast</Text>
-          <TouchableOpacity
-            style={styles.locationButton}
-            onPress={fetchCurrentLocationWeather}>
-            <Text style={styles.locationButtonText}>📍 My Location</Text>
-          </TouchableOpacity>
+          <Text style={[styles.headerTitle, { color: theme.colors.text }]}>
+            Weather Forecast
+          </Text>
+          <View style={styles.headerActions}>
+            {currentWeather && (
+              <FavoriteButton
+                isFavorite={isFavorite(currentWeather.name)}
+                onPress={handleToggleFavorite}
+              />
+            )}
+            <TouchableOpacity
+              style={[styles.locationButton, { backgroundColor: theme.colors.primary }]}
+              onPress={fetchCurrentLocationWeather}>
+              <Text style={styles.locationButtonText}>📍 My Location</Text>
+            </TouchableOpacity>
+          </View>
         </View>
+
+        <FavoritesList
+          favorites={favorites}
+          onSelectCity={handleSelectFavorite}
+          onRemoveFavorite={removeFavorite}
+        />
 
         <SearchBar onSearch={handleSearch} />
 
         {error && (
-          <View style={styles.errorContainer}>
-            <Text style={styles.errorText}>{error}</Text>
+          <View style={[styles.errorContainer, { backgroundColor: theme.colors.error + '20' }]}>
+            <Text style={[styles.errorText, { color: theme.colors.error }]}>
+              {error}
+            </Text>
           </View>
         )}
 
@@ -110,7 +148,6 @@ export const WeatherScreen: React.FC = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#F2F2F7',
   },
   scrollView: {
     flex: 1,
@@ -126,12 +163,16 @@ const styles = StyleSheet.create({
   headerTitle: {
     fontSize: 28,
     fontWeight: 'bold',
-    color: '#000',
+    flex: 1,
+  },
+  headerActions: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
   },
   locationButton: {
     paddingHorizontal: 12,
     paddingVertical: 6,
-    backgroundColor: '#007AFF',
     borderRadius: 8,
   },
   locationButtonText: {
@@ -143,11 +184,9 @@ const styles = StyleSheet.create({
     marginHorizontal: 16,
     marginVertical: 8,
     padding: 12,
-    backgroundColor: '#FFEBEE',
     borderRadius: 8,
   },
   errorText: {
-    color: '#FF3B30',
     fontSize: 14,
   },
 });

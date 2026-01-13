@@ -7,6 +7,7 @@ import { View, Text, StyleSheet, ScrollView } from 'react-native';
 import { HourlyForecast as HourlyForecastType } from '../types';
 import { WeatherIcon } from './WeatherIcon';
 import { Card } from './Card';
+import { useTheme } from '../context/ThemeContext';
 
 interface HourlyForecastProps {
   hourlyData: HourlyForecastType[];
@@ -15,15 +16,22 @@ interface HourlyForecastProps {
 export const HourlyForecast: React.FC<HourlyForecastProps> = ({
   hourlyData,
 }) => {
+  const theme = useTheme();
   return (
     <Card style={styles.card}>
-      <Text style={styles.title}>Hourly Forecast</Text>
+      <Text style={[styles.title, { color: theme.colors.text }]}>
+        Hourly Forecast
+      </Text>
       <ScrollView horizontal showsHorizontalScrollIndicator={false}>
         {hourlyData.map((item, index) => (
           <View key={index} style={styles.hourItem}>
-            <Text style={styles.time}>{item.time}</Text>
+            <Text style={[styles.time, { color: theme.colors.textSecondary }]}>
+              {item.time}
+            </Text>
             <WeatherIcon iconCode={item.icon} size={40} />
-            <Text style={styles.temp}>{item.temp}°</Text>
+            <Text style={[styles.temp, { color: theme.colors.text }]}>
+              {item.temp}°
+            </Text>
           </View>
         ))}
       </ScrollView>
@@ -39,7 +47,6 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 20,
     fontWeight: 'bold',
-    color: '#000',
     marginBottom: 16,
   },
   hourItem: {
@@ -49,13 +56,11 @@ const styles = StyleSheet.create({
   },
   time: {
     fontSize: 12,
-    color: '#666',
     marginBottom: 8,
   },
   temp: {
     fontSize: 14,
     fontWeight: '600',
-    color: '#000',
     marginTop: 4,
   },
 });
