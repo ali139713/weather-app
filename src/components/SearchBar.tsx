@@ -71,7 +71,7 @@ export const SearchBar: React.FC<SearchBarProps> = ({
   };
 
   return (
-    <View>
+    <View style={styles.wrapper}>
       <View
         style={[
           styles.container,
@@ -121,6 +121,10 @@ export const SearchBar: React.FC<SearchBarProps> = ({
 };
 
 const styles = StyleSheet.create({
+  wrapper: {
+    position: 'relative',
+    zIndex: 1000,
+  },
   container: {
     flexDirection: 'row',
     paddingHorizontal: 16,

@@ -34,7 +34,6 @@ export const CitySuggestions: React.FC<CitySuggestionsProps> = ({
       <View
         style={[
           styles.container,
-          styles.absoluteContainer,
           {
             backgroundColor: theme.colors.surface,
             borderColor: theme.colors.border,
@@ -58,7 +57,6 @@ export const CitySuggestions: React.FC<CitySuggestionsProps> = ({
     <View
       style={[
         styles.container,
-        styles.absoluteContainer,
         {
           backgroundColor: theme.colors.surface,
           borderColor: theme.colors.border,
@@ -88,6 +86,7 @@ export const CitySuggestions: React.FC<CitySuggestionsProps> = ({
         scrollEnabled={true}
         nestedScrollEnabled={true}
         keyboardShouldPersistTaps="handled"
+        style={styles.list}
       />
     </View>
   );
@@ -96,6 +95,8 @@ export const CitySuggestions: React.FC<CitySuggestionsProps> = ({
 const styles = StyleSheet.create({
   container: {
     marginHorizontal: 16,
+    marginTop: -8,
+    marginBottom: 8,
     borderRadius: 12,
     borderWidth: StyleSheet.hairlineWidth,
     maxHeight: 200,
@@ -107,13 +108,9 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.1,
     shadowRadius: 4,
     elevation: 5,
-    zIndex: 1000,
   },
-  absoluteContainer: {
-    position: 'absolute',
-    top: 60,
-    left: 0,
-    right: 0,
+  list: {
+    maxHeight: 200,
   },
   loadingContainer: {
     flexDirection: 'row',
