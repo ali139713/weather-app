@@ -11,6 +11,7 @@ import {
   TouchableOpacity,
   Text,
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { useWeather } from '../context/WeatherContext';
 import { useTheme } from '../context/ThemeContext';
 import { useFavorites } from '../hooks/useFavorites';
@@ -89,9 +90,12 @@ export const WeatherScreen: React.FC = () => {
   }
 
   return (
-    <View style={[styles.container, { backgroundColor: theme.colors.background }]}>
+    <SafeAreaView
+      style={[styles.container, { backgroundColor: theme.colors.background }]}
+      edges={['top', 'left', 'right']}>
       <ScrollView
         style={styles.scrollView}
+        contentContainerStyle={styles.scrollContent}
         refreshControl={
           <RefreshControl refreshing={loading} onRefresh={handleRefresh} />
         }
@@ -141,7 +145,7 @@ export const WeatherScreen: React.FC = () => {
           <ForecastList forecasts={dailyForecasts} />
         )}
       </ScrollView>
-    </View>
+    </SafeAreaView>
   );
 };
 
@@ -151,6 +155,9 @@ const styles = StyleSheet.create({
   },
   scrollView: {
     flex: 1,
+  },
+  scrollContent: {
+    paddingBottom: 20,
   },
   header: {
     flexDirection: 'row',
