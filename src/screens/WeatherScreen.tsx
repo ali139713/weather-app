@@ -127,7 +127,9 @@ export const WeatherScreen: React.FC = () => {
           onRemoveFavorite={removeFavorite}
         />
 
-        <SearchBar onSearch={handleSearch} />
+        <View style={styles.searchContainer}>
+          <SearchBar onSearch={handleSearch} />
+        </View>
 
         {error && (
           <View style={[styles.errorContainer, { backgroundColor: theme.colors.error + '20' }]}>
@@ -206,5 +208,9 @@ const styles = StyleSheet.create({
   },
   errorText: {
     fontSize: 14,
+  },
+  searchContainer: {
+    zIndex: 1,
+    marginBottom: 8,
   },
 });
