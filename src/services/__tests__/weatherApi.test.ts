@@ -6,7 +6,8 @@ import { weatherApiService } from '../weatherApi';
 
 // Mock fetch globally
 const mockFetch = jest.fn();
-(global as any).fetch = mockFetch;
+// @ts-ignore - global fetch mock for testing
+global.fetch = mockFetch;
 
 describe('WeatherApiService', () => {
   beforeEach(() => {
