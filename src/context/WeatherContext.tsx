@@ -13,6 +13,7 @@ import { weatherApiService } from '../services/weatherApi';
 import { geolocationService } from '../services/geolocation';
 import { storageService } from '../services/storage';
 import { CACHE_DURATION } from '../constants/config';
+import { getErrorMessage } from '../utils/errorUtils';
 
 type WeatherAction =
   | { type: 'SET_LOADING'; payload: boolean }
@@ -101,10 +102,21 @@ export const WeatherProvider: React.FC<{ children: React.ReactNode }> = ({
           storageService.saveLastUpdated(Date.now()),
         ]);
       } catch (error) {
-        const errorMessage =
-          error instanceof Error ? error.message : 'Failed to fetch weather';
+        const errorMessage = getErrorMessage(error);
         dispatch({ type: 'SET_ERROR', payload: errorMessage });
         dispatch({ type: 'SET_LOADING', payload: false });
+        
+        // Try to load cached data on error for graceful degradation
+        try {
+          const cachedWeather = await storageService.getCurrentWeather();
+          const cachedForecast = await storageService.getForecast();
+          if (cachedWeather && cachedForecast) {
+            dispatch({ type: 'SET_CURRENT_WEATHER', payload: cachedWeather });
+            dispatch({ type: 'SET_FORECAST', payload: cachedForecast });
+          }
+        } catch (cacheError) {
+          // Ignore cache errors
+        }
       }
     },
     [],

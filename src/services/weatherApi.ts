@@ -4,6 +4,7 @@
 
 import { CurrentWeather, ForecastResponse } from '../types';
 import { WEATHER_API_BASE_URL, WEATHER_API_KEY } from '../constants/config';
+import { getErrorMessage } from '../utils/errorUtils';
 
 class WeatherApiService {
   private baseUrl: string;
@@ -21,68 +22,106 @@ class WeatherApiService {
     lat: number,
     lon: number,
   ): Promise<CurrentWeather> {
-    const url = `${this.baseUrl}/weather?lat=${lat}&lon=${lon}&appid=${this.apiKey}&units=metric`;
-    const response = await fetch(url);
+    try {
+      const url = `${this.baseUrl}/weather?lat=${lat}&lon=${lon}&appid=${this.apiKey}&units=metric`;
+      const response = await fetch(url);
 
-    if (!response.ok) {
-      const error = await response.json().catch(() => ({
-        message: 'Failed to fetch weather data',
-      }));
-      throw new Error(error.message || `HTTP error! status: ${response.status}`);
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({
+          message: `HTTP error! status: ${response.status}`,
+        }));
+        throw new Error(errorData.message || `HTTP error! status: ${response.status}`);
+      }
+
+      return response.json();
+    } catch (error) {
+      if (error instanceof TypeError && error.message.includes('fetch')) {
+        throw new Error('Network error: Unable to connect to weather service');
+      }
+      throw error;
     }
-
-    return response.json();
   }
 
   /**
    * Fetches current weather data for a city by name
    */
   async getCurrentWeatherByCity(cityName: string): Promise<CurrentWeather> {
-    const url = `${this.baseUrl}/weather?q=${encodeURIComponent(cityName)}&appid=${this.apiKey}&units=metric`;
-    const response = await fetch(url);
+    try {
+      const url = `${this.baseUrl}/weather?q=${encodeURIComponent(cityName)}&appid=${this.apiKey}&units=metric`;
+      const response = await fetch(url);
 
-    if (!response.ok) {
-      const error = await response.json().catch(() => ({
-        message: 'Failed to fetch weather data',
-      }));
-      throw new Error(error.message || `HTTP error! status: ${response.status}`);
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({
+          message: `HTTP error! status: ${response.status}`,
+        }));
+        
+        if (response.status === 404) {
+          throw new Error(`City "${cityName}" not found. Please check the spelling and try again.`);
+        }
+        
+        throw new Error(errorData.message || `HTTP error! status: ${response.status}`);
+      }
+
+      return response.json();
+    } catch (error) {
+      if (error instanceof TypeError && error.message.includes('fetch')) {
+        throw new Error('Network error: Unable to connect to weather service');
+      }
+      throw error;
     }
-
-    return response.json();
   }
 
   /**
    * Fetches 5-day weather forecast for a given location
    */
   async getForecast(lat: number, lon: number): Promise<ForecastResponse> {
-    const url = `${this.baseUrl}/forecast?lat=${lat}&lon=${lon}&appid=${this.apiKey}&units=metric`;
-    const response = await fetch(url);
+    try {
+      const url = `${this.baseUrl}/forecast?lat=${lat}&lon=${lon}&appid=${this.apiKey}&units=metric`;
+      const response = await fetch(url);
 
-    if (!response.ok) {
-      const error = await response.json().catch(() => ({
-        message: 'Failed to fetch forecast data',
-      }));
-      throw new Error(error.message || `HTTP error! status: ${response.status}`);
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({
+          message: `HTTP error! status: ${response.status}`,
+        }));
+        throw new Error(errorData.message || `HTTP error! status: ${response.status}`);
+      }
+
+      return response.json();
+    } catch (error) {
+      if (error instanceof TypeError && error.message.includes('fetch')) {
+        throw new Error('Network error: Unable to connect to weather service');
+      }
+      throw error;
     }
-
-    return response.json();
   }
 
   /**
    * Fetches 5-day weather forecast for a city by name
    */
   async getForecastByCity(cityName: string): Promise<ForecastResponse> {
-    const url = `${this.baseUrl}/forecast?q=${encodeURIComponent(cityName)}&appid=${this.apiKey}&units=metric`;
-    const response = await fetch(url);
+    try {
+      const url = `${this.baseUrl}/forecast?q=${encodeURIComponent(cityName)}&appid=${this.apiKey}&units=metric`;
+      const response = await fetch(url);
 
-    if (!response.ok) {
-      const error = await response.json().catch(() => ({
-        message: 'Failed to fetch forecast data',
-      }));
-      throw new Error(error.message || `HTTP error! status: ${response.status}`);
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({
+          message: `HTTP error! status: ${response.status}`,
+        }));
+        
+        if (response.status === 404) {
+          throw new Error(`City "${cityName}" not found. Please check the spelling and try again.`);
+        }
+        
+        throw new Error(errorData.message || `HTTP error! status: ${response.status}`);
+      }
+
+      return response.json();
+    } catch (error) {
+      if (error instanceof TypeError && error.message.includes('fetch')) {
+        throw new Error('Network error: Unable to connect to weather service');
+      }
+      throw error;
     }
-
-    return response.json();
   }
 }
 
