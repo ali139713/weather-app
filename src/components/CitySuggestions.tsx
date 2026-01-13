@@ -29,17 +29,18 @@ export const CitySuggestions: React.FC<CitySuggestionsProps> = ({
 }) => {
   const theme = useTheme();
 
+  const containerStyle = [
+    styles.container,
+    styles.absoluteContainer,
+    {
+      backgroundColor: theme.isDark ? '#1C1C1E' : '#FFFFFF',
+      borderColor: theme.colors.border,
+    },
+  ];
+
   if (loading) {
     return (
-      <View
-        style={[
-          styles.container,
-          styles.absoluteContainer,
-          {
-            backgroundColor: theme.colors.surface,
-            borderColor: theme.colors.border,
-          },
-        ]}>
+      <View style={containerStyle}>
         <View style={styles.loadingContainer}>
           <ActivityIndicator size="small" color={theme.colors.primary} />
           <Text style={[styles.loadingText, { color: theme.colors.textSecondary }]}>
@@ -55,15 +56,7 @@ export const CitySuggestions: React.FC<CitySuggestionsProps> = ({
   }
 
   return (
-    <View
-      style={[
-        styles.container,
-        styles.absoluteContainer,
-        {
-          backgroundColor: theme.colors.surface,
-          borderColor: theme.colors.border,
-        },
-      ]}>
+    <View style={containerStyle}>
       <ScrollView
         style={styles.scrollView}
         nestedScrollEnabled={true}
@@ -96,16 +89,16 @@ export const CitySuggestions: React.FC<CitySuggestionsProps> = ({
 const styles = StyleSheet.create({
   container: {
     borderRadius: 12,
-    borderWidth: StyleSheet.hairlineWidth,
+    borderWidth: 1,
     maxHeight: 200,
     shadowColor: '#000',
     shadowOffset: {
       width: 0,
-      height: 2,
+      height: 4,
     },
-    shadowOpacity: 0.15,
-    shadowRadius: 8,
-    elevation: 8,
+    shadowOpacity: 0.25,
+    shadowRadius: 12,
+    elevation: 10,
     zIndex: 1000,
   },
   absoluteContainer: {
