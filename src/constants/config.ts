@@ -1,9 +1,13 @@
 /**
  * Application configuration constants
+ * 
+ * IMPORTANT: Replace the WEATHER_API_KEY below with your OpenWeatherMap API key.
+ * Get your free API key at: https://openweathermap.org/api
  */
 
 export const WEATHER_API_BASE_URL = 'https://api.openweathermap.org/data/2.5';
-export const WEATHER_API_KEY = process.env.WEATHER_API_KEY || '';
+// TODO: Replace with your OpenWeatherMap API key
+export const WEATHER_API_KEY = 'YOUR_API_KEY_HERE';
 
 export const STORAGE_KEYS = {
   CURRENT_WEATHER: '@weather_app:current_weather',
