@@ -60,6 +60,7 @@ export const CitySuggestions: React.FC<CitySuggestionsProps> = ({
     <View style={containerStyle}>
       <ScrollView
         style={styles.scrollView}
+        contentContainerStyle={styles.scrollContent}
         nestedScrollEnabled={true}
         keyboardShouldPersistTaps="handled">
         {suggestions.map((item, index) => (
@@ -110,6 +111,9 @@ const styles = StyleSheet.create({
   },
   scrollView: {
     maxHeight: 200,
+  },
+  scrollContent: {
+    paddingBottom: 8,
   },
   loadingContainer: {
     flexDirection: 'row',
