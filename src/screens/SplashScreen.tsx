@@ -16,6 +16,7 @@ export const SplashScreen: React.FC<SplashScreenProps> = ({ onFinish }) => {
   const scaleAnim = useRef(new Animated.Value(0.5)).current;
   const rotateAnim = useRef(new Animated.Value(0)).current;
   const slideAnim = useRef(new Animated.Value(50)).current;
+  const progressAnim = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
     // Start animations
@@ -43,6 +44,12 @@ export const SplashScreen: React.FC<SplashScreenProps> = ({ onFinish }) => {
         duration: 1000,
         easing: Easing.out(Easing.cubic),
         useNativeDriver: true,
+      }),
+      Animated.timing(progressAnim, {
+        toValue: 1,
+        duration: 2000,
+        easing: Easing.linear,
+        useNativeDriver: false, // Width animation requires non-native driver
       }),
     ]).start();
 
@@ -117,12 +124,10 @@ export const SplashScreen: React.FC<SplashScreenProps> = ({ onFinish }) => {
               styles.loadingProgress,
               {
                 backgroundColor: theme.colors.primary,
-                transform: [
-                  {
-                    scaleX: fadeAnim,
-                  },
-                ],
-                transformOrigin: 'left',
+                width: progressAnim.interpolate({
+                  inputRange: [0, 1],
+                  outputRange: ['0%', '100%'],
+                }),
               },
             ]}
           />
