@@ -2,8 +2,8 @@
  * ForecastList component to display 5-day weather forecast
  */
 
-import React from 'react';
-import { View, Text, StyleSheet, ScrollView } from 'react-native';
+import React, { useRef, useEffect } from 'react';
+import { View, Text, StyleSheet, ScrollView, Animated } from 'react-native';
 import { DailyForecast } from '../types';
 import { WeatherIcon } from './WeatherIcon';
 import { Card } from './Card';
@@ -15,37 +15,65 @@ interface ForecastListProps {
 
 export const ForecastList: React.FC<ForecastListProps> = ({ forecasts }) => {
   const theme = useTheme();
+  const fadeAnim = useRef(new Animated.Value(0)).current;
+
+  useEffect(() => {
+    Animated.timing(fadeAnim, {
+      toValue: 1,
+      duration: 600,
+      delay: 200,
+      useNativeDriver: true,
+    }).start();
+  }, [forecasts]);
+
   return (
-    <Card style={styles.card}>
-      <Text style={[styles.title, { color: theme.colors.text }]}>
-        5-Day Forecast
-      </Text>
-      <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-        {forecasts.map((forecast, index) => (
-          <View key={index} style={styles.forecastItem}>
-            <Text style={[styles.dayName, { color: theme.colors.text }]}>
-              {forecast.dayName}
-            </Text>
-            <Text style={[styles.date, { color: theme.colors.textSecondary }]}>
-              {forecast.date.split(' ')[1]}
-            </Text>
-            <WeatherIcon iconCode={forecast.icon} size={48} />
-            <Text
-              style={[styles.condition, { color: theme.colors.textSecondary }]}>
-              {forecast.condition}
-            </Text>
-            <View style={styles.tempContainer}>
-              <Text style={[styles.high, { color: theme.colors.text }]}>
-                {forecast.high}°
+    <Animated.View style={{ opacity: fadeAnim }}>
+      <Card style={styles.card}>
+        <Text style={[styles.title, { color: theme.colors.text }]}>
+          5-Day Forecast
+        </Text>
+        <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+          {forecasts.map((forecast, index) => (
+            <Animated.View
+              key={index}
+              style={[
+                styles.forecastItem,
+                {
+                  opacity: fadeAnim,
+                  transform: [
+                    {
+                      translateX: fadeAnim.interpolate({
+                        inputRange: [0, 1],
+                        outputRange: [20 * (index + 1), 0],
+                      }),
+                    },
+                  ],
+                },
+              ]}>
+              <Text style={[styles.dayName, { color: theme.colors.text }]}>
+                {forecast.dayName}
               </Text>
-              <Text style={[styles.low, { color: theme.colors.textSecondary }]}>
-                {' '}/ {forecast.low}°
+              <Text style={[styles.date, { color: theme.colors.textSecondary }]}>
+                {forecast.date.split(' ')[1]}
               </Text>
-            </View>
-          </View>
-        ))}
-      </ScrollView>
-    </Card>
+              <WeatherIcon iconCode={forecast.icon} size={48} />
+              <Text
+                style={[styles.condition, { color: theme.colors.textSecondary }]}>
+                {forecast.condition}
+              </Text>
+              <View style={styles.tempContainer}>
+                <Text style={[styles.high, { color: theme.colors.text }]}>
+                  {forecast.high}°
+                </Text>
+                <Text style={[styles.low, { color: theme.colors.textSecondary }]}>
+                  {' '}/ {forecast.low}°
+                </Text>
+              </View>
+            </Animated.View>
+          ))}
+        </ScrollView>
+      </Card>
+    </Animated.View>
   );
 };
 

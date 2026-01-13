@@ -2,8 +2,8 @@
  * HourlyForecast component to display hourly weather forecast for today
  */
 
-import React from 'react';
-import { View, Text, StyleSheet, ScrollView } from 'react-native';
+import React, { useRef, useEffect } from 'react';
+import { View, Text, StyleSheet, ScrollView, Animated } from 'react-native';
 import { HourlyForecast as HourlyForecastType } from '../types';
 import { WeatherIcon } from './WeatherIcon';
 import { Card } from './Card';
@@ -17,25 +17,53 @@ export const HourlyForecast: React.FC<HourlyForecastProps> = ({
   hourlyData,
 }) => {
   const theme = useTheme();
+  const fadeAnim = useRef(new Animated.Value(0)).current;
+
+  useEffect(() => {
+    Animated.timing(fadeAnim, {
+      toValue: 1,
+      duration: 600,
+      delay: 100,
+      useNativeDriver: true,
+    }).start();
+  }, [hourlyData]);
+
   return (
-    <Card style={styles.card}>
-      <Text style={[styles.title, { color: theme.colors.text }]}>
-        Hourly Forecast
-      </Text>
-      <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-        {hourlyData.map((item, index) => (
-          <View key={index} style={styles.hourItem}>
-            <Text style={[styles.time, { color: theme.colors.textSecondary }]}>
-              {item.time}
-            </Text>
-            <WeatherIcon iconCode={item.icon} size={40} />
-            <Text style={[styles.temp, { color: theme.colors.text }]}>
-              {item.temp}°
-            </Text>
-          </View>
-        ))}
-      </ScrollView>
-    </Card>
+    <Animated.View style={{ opacity: fadeAnim }}>
+      <Card style={styles.card}>
+        <Text style={[styles.title, { color: theme.colors.text }]}>
+          Hourly Forecast
+        </Text>
+        <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+          {hourlyData.map((item, index) => (
+            <Animated.View
+              key={index}
+              style={[
+                styles.hourItem,
+                {
+                  opacity: fadeAnim,
+                  transform: [
+                    {
+                      translateX: fadeAnim.interpolate({
+                        inputRange: [0, 1],
+                        outputRange: [15 * (index + 1), 0],
+                      }),
+                    },
+                  ],
+                },
+              ]}>
+              <Text style={[styles.time, { color: theme.colors.textSecondary }]}>
+                {item.time}
+              </Text>
+              <WeatherIcon iconCode={item.icon} size={40} />
+              <Text style={[styles.temp, { color: theme.colors.text }]}>
+                {item.temp}°
+              </Text>
+            </Animated.View>
+          ))}
+        </ScrollView>
+      </Card>
+    </Animated.View>
   );
 };
 
