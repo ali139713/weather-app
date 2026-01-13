@@ -24,6 +24,7 @@ import {
   SearchBar,
   FavoriteButton,
   FavoritesList,
+  ThemeToggle,
 } from '../components';
 import { groupForecastByDay, getHourlyForecast } from '../utils';
 
@@ -105,6 +106,7 @@ export const WeatherScreen: React.FC = () => {
             Weather Forecast
           </Text>
           <View style={styles.headerActions}>
+            <ThemeToggle />
             {currentWeather && (
               <FavoriteButton
                 isFavorite={isFavorite(currentWeather.name)}

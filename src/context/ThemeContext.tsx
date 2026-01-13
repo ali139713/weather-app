@@ -4,6 +4,7 @@
 
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { useColorScheme } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 interface ThemeColors {
   background: string;
@@ -52,18 +53,39 @@ interface ThemeContextType extends Theme {
 
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
+const THEME_STORAGE_KEY = '@weather_app:theme_preference';
+
 export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
   const systemColorScheme = useColorScheme();
   const [isDark, setIsDark] = useState(systemColorScheme === 'dark');
+  const [isInitialized, setIsInitialized] = useState(false);
 
   useEffect(() => {
-    setIsDark(systemColorScheme === 'dark');
+    const loadThemePreference = async () => {
+      try {
+        const preference = await AsyncStorage.getItem(THEME_STORAGE_KEY);
+        if (preference !== null) {
+          setIsDark(preference === 'dark');
+        } else {
+          setIsDark(systemColorScheme === 'dark');
+        }
+      } catch (error) {
+        setIsDark(systemColorScheme === 'dark');
+      }
+    };
+    loadThemePreference();
   }, [systemColorScheme]);
 
-  const toggleTheme = () => {
-    setIsDark(prev => !prev);
+  const toggleTheme = async () => {
+    const newTheme = !isDark;
+    setIsDark(newTheme);
+    try {
+      await AsyncStorage.setItem(THEME_STORAGE_KEY, newTheme ? 'dark' : 'light');
+    } catch (error) {
+      console.error('Failed to save theme preference:', error);
+    }
   };
 
   const theme = isDark ? darkTheme : lightTheme;

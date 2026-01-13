@@ -9,3 +9,4 @@ export * from './ForecastList';
 export * from './HourlyForecast';
 export * from './FavoriteButton';
 export * from './FavoritesList';
+export * from './ThemeToggle';
