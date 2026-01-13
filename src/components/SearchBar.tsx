@@ -77,7 +77,7 @@ export const SearchBar: React.FC<SearchBarProps> = ({
           styles.container,
           {
             backgroundColor: theme.isDark ? '#1C1C1E' : '#FFFFFF',
-            borderColor: theme.colors.border,
+            borderColor: theme.isDark ? '#38383A' : '#E5E5EA',
           },
         ]}>
         <TextInput

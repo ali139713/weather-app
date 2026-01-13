@@ -33,8 +33,9 @@ export const CitySuggestions: React.FC<CitySuggestionsProps> = ({
     styles.container,
     styles.absoluteContainer,
     {
-      backgroundColor: theme.isDark ? '#1C1C1E' : '#FFFFFF',
-      borderColor: theme.colors.border,
+      backgroundColor: theme.isDark ? '#2C2C2E' : '#FFFFFF',
+      borderColor: theme.isDark ? '#48484A' : '#E5E5EA',
+      borderWidth: theme.isDark ? 1.5 : 1,
     },
   ];
 
@@ -89,16 +90,15 @@ export const CitySuggestions: React.FC<CitySuggestionsProps> = ({
 const styles = StyleSheet.create({
   container: {
     borderRadius: 12,
-    borderWidth: 1,
     maxHeight: 200,
     shadowColor: '#000',
     shadowOffset: {
       width: 0,
       height: 4,
     },
-    shadowOpacity: 0.25,
+    shadowOpacity: 0.3,
     shadowRadius: 12,
-    elevation: 10,
+    elevation: 12,
     zIndex: 1000,
   },
   absoluteContainer: {
