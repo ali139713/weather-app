@@ -245,29 +245,24 @@ Current test coverage includes:
 
 ## Screenshots
 
-Add your screenshots here once you've taken them. To add screenshots:
-
-1. **Take screenshots** from iOS Simulator (`Cmd + S`) or Android Emulator (camera icon)
-2. **Save them** in the `screenshots/` folder with descriptive names
-3. **Commit and push** the images to your GitHub repository
-4. **Reference them** in the README using the format below:
-
-```markdown
 ### iOS
+
+#### Light Mode
 <img src="screenshots/ios-light-splash.png" width="300" alt="iOS Light Mode Splash Screen" />
 <img src="screenshots/ios-light-home-1.png" width="300" alt="iOS Light Mode Home 1 Screen" />
 <img src="screenshots/ios-light-home-2.png" width="300" alt="iOS Light Mode Home 2 Screen" />
 <img src="screenshots/ios-light-search.png" width="300" alt="iOS Light Mode Search" />
+
+#### Dark Mode
 <img src="screenshots/ios-dark-splash.png" width="300" alt="iOS Dark Mode Splash Screen" />
 <img src="screenshots/ios-dark-home-1.png" width="300" alt="iOS Dark Mode Home 1 Screen" />
 <img src="screenshots/ios-dark-home-2.png" width="300" alt="iOS Dark Mode Home 2 Screen" />
 <img src="screenshots/ios-dark-search-splash.png" width="300" alt="iOS Dark Mode Search" />
 
-
 ### Android
+
 <img src="screenshots/android-main.png" width="300" alt="Android Main Screen" />
 <img src="screenshots/android-dark.png" width="300" alt="Android Dark Mode" />
-```
 
 
 
