@@ -117,10 +117,12 @@ export const SplashScreen: React.FC<SplashScreenProps> = ({ onFinish }) => {
               styles.loadingProgress,
               {
                 backgroundColor: theme.colors.primary,
-                width: fadeAnim.interpolate({
-                  inputRange: [0, 1],
-                  outputRange: ['0%', '100%'],
-                }),
+                transform: [
+                  {
+                    scaleX: fadeAnim,
+                  },
+                ],
+                transformOrigin: 'left',
               },
             ]}
           />
@@ -168,6 +170,7 @@ const styles = StyleSheet.create({
   },
   loadingProgress: {
     height: '100%',
+    width: '100%',
     borderRadius: 2,
   },
 });
