@@ -8,7 +8,7 @@ import {
   Text,
   StyleSheet,
   TouchableOpacity,
-  FlatList,
+  ScrollView,
   ActivityIndicator,
 } from 'react-native';
 import { useTheme } from '../context/ThemeContext';
@@ -34,6 +34,7 @@ export const CitySuggestions: React.FC<CitySuggestionsProps> = ({
       <View
         style={[
           styles.container,
+          styles.absoluteContainer,
           {
             backgroundColor: theme.colors.surface,
             borderColor: theme.colors.border,
@@ -57,20 +58,24 @@ export const CitySuggestions: React.FC<CitySuggestionsProps> = ({
     <View
       style={[
         styles.container,
+        styles.absoluteContainer,
         {
           backgroundColor: theme.colors.surface,
           borderColor: theme.colors.border,
         },
       ]}>
-      <FlatList
-        data={suggestions}
-        keyExtractor={(item, index) => `${item.name}-${item.country}-${index}`}
-        renderItem={({ item }) => (
+      <ScrollView
+        style={styles.scrollView}
+        nestedScrollEnabled={true}
+        keyboardShouldPersistTaps="handled">
+        {suggestions.map((item, index) => (
           <TouchableOpacity
+            key={`${item.name}-${item.country}-${index}`}
             style={[
               styles.suggestionItem,
               {
                 borderBottomColor: theme.colors.border,
+                borderBottomWidth: index < suggestions.length - 1 ? StyleSheet.hairlineWidth : 0,
               },
             ]}
             onPress={() => onSelect(item)}>
@@ -82,21 +87,14 @@ export const CitySuggestions: React.FC<CitySuggestionsProps> = ({
               {item.country}
             </Text>
           </TouchableOpacity>
-        )}
-        scrollEnabled={true}
-        nestedScrollEnabled={true}
-        keyboardShouldPersistTaps="handled"
-        style={styles.list}
-      />
+        ))}
+      </ScrollView>
     </View>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
-    marginHorizontal: 16,
-    marginTop: -8,
-    marginBottom: 8,
     borderRadius: 12,
     borderWidth: StyleSheet.hairlineWidth,
     maxHeight: 200,
@@ -105,11 +103,19 @@ const styles = StyleSheet.create({
       width: 0,
       height: 2,
     },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 5,
+    shadowOpacity: 0.15,
+    shadowRadius: 8,
+    elevation: 8,
+    zIndex: 1000,
   },
-  list: {
+  absoluteContainer: {
+    position: 'absolute',
+    top: '100%',
+    left: 16,
+    right: 16,
+    marginTop: 4,
+  },
+  scrollView: {
     maxHeight: 200,
   },
   loadingContainer: {
@@ -124,7 +130,6 @@ const styles = StyleSheet.create({
   },
   suggestionItem: {
     padding: 16,
-    borderBottomWidth: StyleSheet.hairlineWidth,
   },
   cityName: {
     fontSize: 16,

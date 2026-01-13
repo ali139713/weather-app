@@ -75,7 +75,10 @@ export const SearchBar: React.FC<SearchBarProps> = ({
       <View
         style={[
           styles.container,
-          { backgroundColor: theme.colors.background },
+          {
+            backgroundColor: theme.colors.surface,
+            borderColor: theme.colors.border,
+          },
         ]}>
         <TextInput
           style={[styles.input, { color: theme.colors.text }]}
@@ -124,14 +127,16 @@ const styles = StyleSheet.create({
   wrapper: {
     position: 'relative',
     zIndex: 1000,
+    marginHorizontal: 16,
+    marginVertical: 12,
   },
   container: {
     flexDirection: 'row',
+    alignItems: 'center',
     paddingHorizontal: 16,
-    paddingVertical: 14,
-    borderRadius: 16,
-    marginHorizontal: 16,
-    marginVertical: 8,
+    paddingVertical: 12,
+    borderRadius: 12,
+    borderWidth: StyleSheet.hairlineWidth,
     shadowColor: '#000',
     shadowOffset: {
       width: 0,
@@ -139,19 +144,20 @@ const styles = StyleSheet.create({
     },
     shadowOpacity: 0.1,
     shadowRadius: 4,
-    elevation: 2,
+    elevation: 3,
   },
   input: {
     flex: 1,
     fontSize: 16,
-    paddingVertical: 8,
+    paddingVertical: 4,
+    paddingRight: 8,
   },
   button: {
-    marginLeft: 12,
     paddingHorizontal: 16,
-    paddingVertical: 8,
+    paddingVertical: 10,
     borderRadius: 8,
     justifyContent: 'center',
+    minWidth: 70,
   },
   buttonText: {
     color: '#FFFFFF',
