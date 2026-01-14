@@ -261,8 +261,12 @@ Current test coverage includes:
 
 ### Android
 
-<img src="screenshots/android-main.png" width="300" alt="Android Main Screen" />
-<img src="screenshots/android-dark.png" width="300" alt="Android Dark Mode" />
+<img src="screenshots/android-light-splash.png" width="300" alt="Android Light Splash Screen" />
+<img src="screenshots/android-light-home.png" width="300" alt="Android Light Home Screen" />
+<img src="screenshots/android-light-search.png" width="300" alt="Android Light Search Screen" />
+<img src="screenshots/android-dark-splash.png" width="300" alt="Android Dark Splash Screen" />
+<img src="screenshots/android-dark-home.png" width="300" alt="Android Dark Home Screen" />
+<img src="screenshots/android-dark-search.png" width="300" alt="Android Dark Search Screen" />
 
 
 
