@@ -257,7 +257,7 @@ Current test coverage includes:
 <img src="screenshots/ios-dark-splash.png" width="300" alt="iOS Dark Mode Splash Screen" />
 <img src="screenshots/ios-dark-home-1.png" width="300" alt="iOS Dark Mode Home 1 Screen" />
 <img src="screenshots/ios-dark-home-2.png" width="300" alt="iOS Dark Mode Home 2 Screen" />
-<img src="screenshots/ios-dark-search-splash.png" width="300" alt="iOS Dark Mode Search" />
+<img src="screenshots/ios-dark-search.png" width="300" alt="iOS Dark Mode Search" />
 
 ### Android
 
