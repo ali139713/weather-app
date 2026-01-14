@@ -2,7 +2,7 @@
  * SearchBar component with debounced search and city suggestions
  */
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, forwardRef, useImperativeHandle } from 'react';
 import {
   View,
   TextInput,
@@ -13,26 +13,26 @@ import {
 import { useTheme } from '../context/ThemeContext';
 import { useDebounce } from '../hooks/useDebounce';
 import { geocodingService, CitySuggestion } from '../services/geocoding';
-import { CitySuggestions } from './CitySuggestions';
 
 interface SearchBarProps {
   onSearch: (cityName: string) => void;
   placeholder?: string;
   onFocus?: () => void;
-  onSuggestionsChange?: (visible: boolean) => void;
+  onSuggestionsChange?: (suggestions: CitySuggestion[], loading: boolean, visible: boolean) => void;
+  onLayout?: (event: any) => void;
 }
 
-export const SearchBar: React.FC<SearchBarProps> = ({
+export const SearchBar = forwardRef<View, SearchBarProps>(({
   onSearch,
   placeholder = 'Search city...',
   onFocus,
   onSuggestionsChange,
-}) => {
+  onLayout,
+}, ref) => {
   const theme = useTheme();
   const [query, setQuery] = useState('');
   const [suggestions, setSuggestions] = useState<CitySuggestion[]>([]);
   const [loading, setLoading] = useState(false);
-  const [showSuggestions, setShowSuggestions] = useState(false);
 
   const debouncedQuery = useDebounce(query, 500);
 
@@ -40,20 +40,20 @@ export const SearchBar: React.FC<SearchBarProps> = ({
     const fetchSuggestions = async () => {
       if (debouncedQuery.trim().length >= 2) {
         setLoading(true);
+        onSuggestionsChange?.([], true, true);
         try {
           const results = await geocodingService.getCitySuggestions(debouncedQuery);
           setSuggestions(results);
-          setShowSuggestions(true);
-          onSuggestionsChange?.(true);
+          onSuggestionsChange?.(results, false, true);
         } catch {
           setSuggestions([]);
+          onSuggestionsChange?.([], false, false);
         } finally {
           setLoading(false);
         }
       } else {
         setSuggestions([]);
-        setShowSuggestions(false);
-        onSuggestionsChange?.(false);
+        onSuggestionsChange?.([], false, false);
       }
     };
 
@@ -66,13 +66,8 @@ export const SearchBar: React.FC<SearchBarProps> = ({
       onSearch(searchTerm);
       setQuery('');
       setSuggestions([]);
-      setShowSuggestions(false);
-      onSuggestionsChange?.(false);
+      onSuggestionsChange?.([], false, false);
     }
-  };
-
-  const handleSelectSuggestion = (city: CitySuggestion) => {
-    handleSearch(city.name);
   };
 
   const getContainerStyle = () => [
@@ -91,8 +86,19 @@ export const SearchBar: React.FC<SearchBarProps> = ({
     !query.trim() && styles.buttonDisabled,
   ];
 
+  const wrapperRef = React.useRef<View>(null);
+
+  useImperativeHandle(ref, () => wrapperRef.current as View);
+
+  const handleLayout = () => {
+    // Measure in window to get absolute screen coordinates
+    wrapperRef.current?.measureInWindow((x, y, width, height) => {
+      onLayout?.({ nativeEvent: { layout: { x, y, width, height } } } as any);
+    });
+  };
+
   return (
-    <View style={styles.wrapper}>
+    <View ref={wrapperRef} style={styles.wrapper} onLayout={handleLayout}>
       <View style={getContainerStyle()}>
         <TextInput
           style={getInputStyle()}
@@ -104,15 +110,13 @@ export const SearchBar: React.FC<SearchBarProps> = ({
           onFocus={() => {
             if (onFocus) onFocus();
             if (suggestions.length > 0 || loading) {
-              setShowSuggestions(true);
-              onSuggestionsChange?.(true);
+              onSuggestionsChange?.(suggestions, loading, true);
             }
           }}
           onBlur={() => {
             // Delay hiding to allow suggestion selection
             setTimeout(() => {
-              setShowSuggestions(false);
-              onSuggestionsChange?.(false);
+              onSuggestionsChange?.(suggestions, loading, false);
             }, 300);
           }}
           returnKeyType="search"
@@ -124,17 +128,9 @@ export const SearchBar: React.FC<SearchBarProps> = ({
           <Text style={styles.buttonText}>Search</Text>
         </TouchableOpacity>
       </View>
-      {showSuggestions && (suggestions.length > 0 || loading) && (
-        <CitySuggestions
-          suggestions={suggestions}
-          loading={loading}
-          onSelect={handleSelectSuggestion}
-          onClose={() => setShowSuggestions(false)}
-        />
-      )}
     </View>
   );
-};
+});
 
 const styles = StyleSheet.create({
   wrapper: {

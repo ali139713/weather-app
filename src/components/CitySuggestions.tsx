@@ -19,12 +19,18 @@ interface CitySuggestionsProps {
   loading: boolean;
   onSelect: (city: CitySuggestion) => void;
   onClose: () => void;
+  top?: number;
+  left?: number;
+  width?: number;
 }
 
 export const CitySuggestions: React.FC<CitySuggestionsProps> = ({
   suggestions,
   loading,
   onSelect,
+  top,
+  left,
+  width,
 }) => {
   const theme = useTheme();
 
@@ -32,6 +38,9 @@ export const CitySuggestions: React.FC<CitySuggestionsProps> = ({
     styles.container,
     styles.absoluteContainer,
     theme.isDark ? styles.containerDark : styles.containerLight,
+    top !== undefined && { top },
+    left !== undefined && { left },
+    width !== undefined && { width },
   ];
 
   const getSuggestionItemStyle = (index: number) => [
@@ -114,9 +123,6 @@ const styles = StyleSheet.create({
   },
   absoluteContainer: {
     position: 'absolute',
-    top: '100%',
-    left: 16,
-    right: 16,
     marginTop: 4,
   },
   scrollView: {

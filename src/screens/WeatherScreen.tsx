@@ -2,7 +2,7 @@
  * Main Weather Screen displaying current weather and forecast
  */
 
-import React, { useEffect } from 'react';
+import React, { useEffect, useState, useCallback, useRef } from 'react';
 import {
   View,
   StyleSheet,
@@ -25,8 +25,10 @@ import {
   FavoriteButton,
   FavoritesList,
   ThemeToggle,
+  CitySuggestions,
 } from '../components';
 import { groupForecastByDay, getHourlyForecast } from '../utils';
+import { CitySuggestion } from '../services/geocoding';
 
 export const WeatherScreen: React.FC = () => {
   const theme = useTheme();
@@ -42,6 +44,11 @@ export const WeatherScreen: React.FC = () => {
   } = useWeather();
   const { favorites, addFavorite, removeFavorite, isFavorite } =
     useFavorites();
+  const [suggestions, setSuggestions] = useState<CitySuggestion[]>([]);
+  const [suggestionsLoading, setSuggestionsLoading] = useState(false);
+  const [showSuggestions, setShowSuggestions] = useState(false);
+  const [searchBarLayout, setSearchBarLayout] = useState<{ y: number; x: number; width: number; height: number } | null>(null);
+  const scrollViewRef = useRef<ScrollView>(null);
 
   useEffect(() => {
     if (!currentWeather) {
@@ -71,23 +78,42 @@ export const WeatherScreen: React.FC = () => {
     await fetchWeatherByCity(cityName);
   };
 
+  const searchBarRef = useRef<View>(null);
+
+  const handleSearchBarLayout = useCallback((event: any) => {
+    const { x, y, width, height } = event.nativeEvent.layout;
+    setSearchBarLayout({ x, y, width, height });
+  }, []);
+
+  const handleSuggestionsChange = useCallback((suggestionsList: CitySuggestion[], isLoading: boolean, visible: boolean) => {
+    setSuggestions(suggestionsList);
+    setSuggestionsLoading(isLoading);
+    setShowSuggestions(visible);
+  }, []);
+
+  const handleSelectSuggestion = useCallback(async (city: CitySuggestion) => {
+    await fetchWeatherByCity(city.name);
+    setSuggestions([]);
+    setShowSuggestions(false);
+  }, [fetchWeatherByCity]);
+
   const dailyForecasts = forecast ? groupForecastByDay(forecast.list) : [];
   const hourlyForecasts = forecast ? getHourlyForecast(forecast.list) : [];
 
-  if (loading && !currentWeather) {
+  // Show loading if we don't have weather data yet (either loading or waiting for initial load)
+  if (!currentWeather) {
+    if (error) {
+      return (
+        <Error
+          message={error}
+          onRetry={() => {
+            clearError();
+            fetchCurrentLocationWeather();
+          }}
+        />
+      );
+    }
     return <Loading message="Loading weather data..." />;
-  }
-
-  if (error && !currentWeather) {
-    return (
-      <Error
-        message={error}
-        onRetry={() => {
-          clearError();
-          fetchCurrentLocationWeather();
-        }}
-      />
-    );
   }
 
   return (
@@ -95,6 +121,7 @@ export const WeatherScreen: React.FC = () => {
       style={[styles.container, { backgroundColor: theme.colors.background }]}
       edges={['top', 'left', 'right']}>
       <ScrollView
+        ref={scrollViewRef}
         style={styles.scrollView}
         contentContainerStyle={styles.scrollContent}
         refreshControl={
@@ -127,7 +154,12 @@ export const WeatherScreen: React.FC = () => {
           onRemoveFavorite={removeFavorite}
         />
 
-        <SearchBar onSearch={handleSearch} />
+        <SearchBar
+          ref={searchBarRef}
+          onSearch={handleSearch}
+          onLayout={handleSearchBarLayout}
+          onSuggestionsChange={handleSuggestionsChange}
+        />
 
         {error && (
           <View style={[styles.errorContainer, { backgroundColor: theme.colors.error + '20' }]}>
@@ -147,6 +179,24 @@ export const WeatherScreen: React.FC = () => {
           <ForecastList forecasts={dailyForecasts} />
         )}
       </ScrollView>
+      {showSuggestions && (suggestions.length > 0 || suggestionsLoading) && searchBarLayout && (
+        <>
+          <TouchableOpacity
+            style={styles.backdrop}
+            activeOpacity={1}
+            onPress={() => setShowSuggestions(false)}
+          />
+          <CitySuggestions
+            suggestions={suggestions}
+            loading={suggestionsLoading}
+            onSelect={handleSelectSuggestion}
+            onClose={() => setShowSuggestions(false)}
+            top={searchBarLayout.y + searchBarLayout.height + 4}
+            left={searchBarLayout.x}
+            width={searchBarLayout.width}
+          />
+        </>
+      )}
     </SafeAreaView>
   );
 };
@@ -206,5 +256,14 @@ const styles = StyleSheet.create({
   },
   errorText: {
     fontSize: 14,
+  },
+  backdrop: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: 'transparent',
+    zIndex: 999,
   },
 });
