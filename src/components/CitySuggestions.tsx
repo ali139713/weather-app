@@ -62,7 +62,9 @@ export const CitySuggestions: React.FC<CitySuggestionsProps> = ({
         style={styles.scrollView}
         contentContainerStyle={styles.scrollContent}
         nestedScrollEnabled={true}
-        keyboardShouldPersistTaps="handled">
+        scrollEnabled={true}
+        keyboardShouldPersistTaps="handled"
+        showsVerticalScrollIndicator={true}>
         {suggestions.map((item, index) => (
           <TouchableOpacity
             key={`${item.name}-${item.country}-${index}`}
@@ -91,7 +93,8 @@ export const CitySuggestions: React.FC<CitySuggestionsProps> = ({
 const styles = StyleSheet.create({
   container: {
     borderRadius: 12,
-    maxHeight: 200,
+    height: 200,
+    overflow: 'hidden',
     shadowColor: '#000',
     shadowOffset: {
       width: 0,
@@ -110,7 +113,7 @@ const styles = StyleSheet.create({
     marginTop: 4,
   },
   scrollView: {
-    maxHeight: 200,
+    flex: 1,
   },
   scrollContent: {
     paddingBottom: 8,
