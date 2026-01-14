@@ -25,26 +25,31 @@ export const CitySuggestions: React.FC<CitySuggestionsProps> = ({
   suggestions,
   loading,
   onSelect,
-  onClose,
 }) => {
   const theme = useTheme();
 
-  const containerStyle = [
+  const getContainerStyle = () => [
     styles.container,
     styles.absoluteContainer,
-    {
-      backgroundColor: theme.isDark ? '#2C2C2E' : '#FFFFFF',
-      borderColor: theme.isDark ? '#48484A' : '#E5E5EA',
-      borderWidth: theme.isDark ? 1.5 : 1,
-    },
+    theme.isDark ? styles.containerDark : styles.containerLight,
+  ];
+
+  const getSuggestionItemStyle = (index: number) => [
+    styles.suggestionItem,
+    index < suggestions.length - 1 && (theme.isDark ? styles.suggestionItemBorderDark : styles.suggestionItemBorderLight),
+  ];
+
+  const getTextStyle = (type: 'city' | 'country') => [
+    type === 'city' ? styles.cityName : styles.countryName,
+    theme.isDark ? styles.textDark : styles.textLight,
   ];
 
   if (loading) {
     return (
-      <View style={containerStyle}>
+      <View style={getContainerStyle()}>
         <View style={styles.loadingContainer}>
           <ActivityIndicator size="small" color={theme.colors.primary} />
-          <Text style={[styles.loadingText, { color: theme.colors.textSecondary }]}>
+          <Text style={[styles.loadingText, theme.isDark ? styles.textSecondaryDark : styles.textSecondaryLight]}>
             Searching...
           </Text>
         </View>
@@ -57,29 +62,21 @@ export const CitySuggestions: React.FC<CitySuggestionsProps> = ({
   }
 
   return (
-    <View style={containerStyle}>
+    <View style={getContainerStyle()}>
       <ScrollView
         style={styles.scrollView}
         contentContainerStyle={styles.scrollContent}
         nestedScrollEnabled={true}
-        scrollEnabled={true}
         keyboardShouldPersistTaps="handled"
-        showsVerticalScrollIndicator={true}>
+        showsVerticalScrollIndicator={true}
+        bounces={false}>
         {suggestions.map((item, index) => (
           <TouchableOpacity
             key={`${item.name}-${item.country}-${index}`}
-            style={[
-              styles.suggestionItem,
-              {
-                borderBottomColor: theme.colors.border,
-                borderBottomWidth: index < suggestions.length - 1 ? StyleSheet.hairlineWidth : 0,
-              },
-            ]}
+            style={getSuggestionItemStyle(index)}
             onPress={() => onSelect(item)}>
-            <Text style={[styles.cityName, { color: theme.colors.text }]}>
-              {item.name}
-            </Text>
-            <Text style={[styles.countryName, { color: theme.colors.textSecondary }]}>
+            <Text style={getTextStyle('city')}>{item.name}</Text>
+            <Text style={getTextStyle('country')}>
               {item.state ? `${item.state}, ` : ''}
               {item.country}
             </Text>
@@ -105,6 +102,16 @@ const styles = StyleSheet.create({
     elevation: 12,
     zIndex: 1000,
   },
+  containerLight: {
+    backgroundColor: '#FFFFFF',
+    borderColor: '#E5E5EA',
+    borderWidth: 1,
+  },
+  containerDark: {
+    backgroundColor: '#2C2C2E',
+    borderColor: '#48484A',
+    borderWidth: 1.5,
+  },
   absoluteContainer: {
     position: 'absolute',
     top: '100%',
@@ -117,6 +124,7 @@ const styles = StyleSheet.create({
   },
   scrollContent: {
     paddingBottom: 8,
+    flexGrow: 1,
   },
   loadingContainer: {
     flexDirection: 'row',
@@ -131,6 +139,14 @@ const styles = StyleSheet.create({
   suggestionItem: {
     padding: 16,
   },
+  suggestionItemBorderLight: {
+    borderBottomWidth: StyleSheet.hairlineWidth,
+    borderBottomColor: '#E5E5EA',
+  },
+  suggestionItemBorderDark: {
+    borderBottomWidth: StyleSheet.hairlineWidth,
+    borderBottomColor: '#48484A',
+  },
   cityName: {
     fontSize: 16,
     fontWeight: '600',
@@ -138,5 +154,17 @@ const styles = StyleSheet.create({
   },
   countryName: {
     fontSize: 14,
+  },
+  textLight: {
+    color: '#000000',
+  },
+  textDark: {
+    color: '#FFFFFF',
+  },
+  textSecondaryLight: {
+    color: '#8E8E93',
+  },
+  textSecondaryDark: {
+    color: '#8E8E93',
   },
 });

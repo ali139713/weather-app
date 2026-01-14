@@ -19,12 +19,14 @@ interface SearchBarProps {
   onSearch: (cityName: string) => void;
   placeholder?: string;
   onFocus?: () => void;
+  onSuggestionsChange?: (visible: boolean) => void;
 }
 
 export const SearchBar: React.FC<SearchBarProps> = ({
   onSearch,
   placeholder = 'Search city...',
   onFocus,
+  onSuggestionsChange,
 }) => {
   const theme = useTheme();
   const [query, setQuery] = useState('');
@@ -42,7 +44,8 @@ export const SearchBar: React.FC<SearchBarProps> = ({
           const results = await geocodingService.getCitySuggestions(debouncedQuery);
           setSuggestions(results);
           setShowSuggestions(true);
-        } catch (error) {
+          onSuggestionsChange?.(true);
+        } catch {
           setSuggestions([]);
         } finally {
           setLoading(false);
@@ -50,11 +53,12 @@ export const SearchBar: React.FC<SearchBarProps> = ({
       } else {
         setSuggestions([]);
         setShowSuggestions(false);
+        onSuggestionsChange?.(false);
       }
     };
 
     fetchSuggestions();
-  }, [debouncedQuery]);
+  }, [debouncedQuery, onSuggestionsChange]);
 
   const handleSearch = (cityName?: string) => {
     const searchTerm = cityName || query.trim();
@@ -63,6 +67,7 @@ export const SearchBar: React.FC<SearchBarProps> = ({
       setQuery('');
       setSuggestions([]);
       setShowSuggestions(false);
+      onSuggestionsChange?.(false);
     }
   };
 
@@ -70,18 +75,27 @@ export const SearchBar: React.FC<SearchBarProps> = ({
     handleSearch(city.name);
   };
 
+  const getContainerStyle = () => [
+    styles.container,
+    theme.isDark ? styles.containerDark : styles.containerLight,
+  ];
+
+  const getInputStyle = () => [
+    styles.input,
+    theme.isDark ? styles.inputDark : styles.inputLight,
+  ];
+
+  const getButtonStyle = () => [
+    styles.button,
+    theme.isDark ? styles.buttonDark : styles.buttonLight,
+    !query.trim() && styles.buttonDisabled,
+  ];
+
   return (
     <View style={styles.wrapper}>
-      <View
-        style={[
-          styles.container,
-          {
-            backgroundColor: theme.isDark ? '#1C1C1E' : '#FFFFFF',
-            borderColor: theme.isDark ? '#38383A' : '#E5E5EA',
-          },
-        ]}>
+      <View style={getContainerStyle()}>
         <TextInput
-          style={[styles.input, { color: theme.colors.text }]}
+          style={getInputStyle()}
           placeholder={placeholder}
           placeholderTextColor={theme.colors.textSecondary}
           value={query}
@@ -91,21 +105,20 @@ export const SearchBar: React.FC<SearchBarProps> = ({
             if (onFocus) onFocus();
             if (suggestions.length > 0 || loading) {
               setShowSuggestions(true);
+              onSuggestionsChange?.(true);
             }
           }}
           onBlur={() => {
-            setTimeout(() => setShowSuggestions(false), 200);
+            // Delay hiding to allow suggestion selection
+            setTimeout(() => {
+              setShowSuggestions(false);
+              onSuggestionsChange?.(false);
+            }, 300);
           }}
           returnKeyType="search"
         />
         <TouchableOpacity
-          style={[
-            styles.button,
-            {
-              backgroundColor: theme.colors.primary,
-              opacity: query.trim() ? 1 : 0.5,
-            },
-          ]}
+          style={getButtonStyle()}
           onPress={() => handleSearch()}
           disabled={!query.trim()}>
           <Text style={styles.buttonText}>Search</Text>
@@ -146,11 +159,25 @@ const styles = StyleSheet.create({
     shadowRadius: 4,
     elevation: 3,
   },
+  containerLight: {
+    backgroundColor: '#FFFFFF',
+    borderColor: '#E5E5EA',
+  },
+  containerDark: {
+    backgroundColor: '#1C1C1E',
+    borderColor: '#38383A',
+  },
   input: {
     flex: 1,
     fontSize: 16,
     paddingVertical: 4,
     paddingRight: 8,
+  },
+  inputLight: {
+    color: '#000000',
+  },
+  inputDark: {
+    color: '#FFFFFF',
   },
   button: {
     paddingHorizontal: 16,
@@ -158,6 +185,15 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     justifyContent: 'center',
     minWidth: 70,
+  },
+  buttonLight: {
+    backgroundColor: '#007AFF',
+  },
+  buttonDark: {
+    backgroundColor: '#007AFF',
+  },
+  buttonDisabled: {
+    opacity: 0.5,
   },
   buttonText: {
     color: '#FFFFFF',
