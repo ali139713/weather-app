@@ -19,7 +19,6 @@ export const Loading: React.FC<LoadingProps> = ({ message = 'Loading weather dat
   const pulseAnim = useRef(new Animated.Value(1)).current;
 
   useEffect(() => {
-    // Cloud floating animations
     const cloud1Animation = Animated.loop(
       Animated.sequence([
         Animated.timing(cloud1Anim, {
@@ -71,7 +70,6 @@ export const Loading: React.FC<LoadingProps> = ({ message = 'Loading weather dat
       ])
     );
 
-    // Sun rotation animation
     const sunAnimation = Animated.loop(
       Animated.timing(sunAnim, {
         toValue: 1,
@@ -81,7 +79,6 @@ export const Loading: React.FC<LoadingProps> = ({ message = 'Loading weather dat
       })
     );
 
-    // Pulse animation
     const pulseAnimation = Animated.loop(
       Animated.sequence([
         Animated.timing(pulseAnim, {
@@ -135,9 +132,8 @@ export const Loading: React.FC<LoadingProps> = ({ message = 'Loading weather dat
   });
 
   return (
-    <View style={[styles.container, { backgroundColor: theme.colors.background }]}>
+      <View style={[styles.container, { backgroundColor: theme.colors.background }]}>
       <View style={styles.animationContainer}>
-        {/* Sun */}
         <Animated.View
           style={[
             styles.sun,
@@ -151,7 +147,6 @@ export const Loading: React.FC<LoadingProps> = ({ message = 'Loading weather dat
           <Text style={styles.sunEmoji}>☀️</Text>
         </Animated.View>
 
-        {/* Clouds */}
         <Animated.View
           style={[
             styles.cloud,

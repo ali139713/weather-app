@@ -2,7 +2,7 @@
  * SearchBar component with debounced search and city suggestions
  */
 
-import React, { useState, useEffect, forwardRef, useImperativeHandle } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
   View,
   TextInput,
@@ -17,18 +17,16 @@ import { geocodingService, CitySuggestion } from '../services/geocoding';
 interface SearchBarProps {
   onSearch: (cityName: string) => void;
   placeholder?: string;
-  onFocus?: () => void;
   onSuggestionsChange?: (suggestions: CitySuggestion[], loading: boolean, visible: boolean) => void;
   onLayout?: (event: any) => void;
 }
 
-export const SearchBar = forwardRef<View, SearchBarProps>(({
+export const SearchBar: React.FC<SearchBarProps> = ({
   onSearch,
   placeholder = 'Search city...',
-  onFocus,
   onSuggestionsChange,
   onLayout,
-}, ref) => {
+}) => {
   const theme = useTheme();
   const [query, setQuery] = useState('');
   const [suggestions, setSuggestions] = useState<CitySuggestion[]>([]);
@@ -86,12 +84,9 @@ export const SearchBar = forwardRef<View, SearchBarProps>(({
     !query.trim() && styles.buttonDisabled,
   ];
 
-  const wrapperRef = React.useRef<View>(null);
-
-  useImperativeHandle(ref, () => wrapperRef.current as View);
+  const wrapperRef = useRef<View>(null);
 
   const handleLayout = () => {
-    // Measure in window to get absolute screen coordinates
     wrapperRef.current?.measureInWindow((x, y, width, height) => {
       onLayout?.({ nativeEvent: { layout: { x, y, width, height } } } as any);
     });
@@ -108,13 +103,11 @@ export const SearchBar = forwardRef<View, SearchBarProps>(({
           onChangeText={setQuery}
           onSubmitEditing={() => handleSearch()}
           onFocus={() => {
-            if (onFocus) onFocus();
             if (suggestions.length > 0 || loading) {
               onSuggestionsChange?.(suggestions, loading, true);
             }
           }}
           onBlur={() => {
-            // Delay hiding to allow suggestion selection
             setTimeout(() => {
               onSuggestionsChange?.(suggestions, loading, false);
             }, 300);
@@ -130,7 +123,7 @@ export const SearchBar = forwardRef<View, SearchBarProps>(({
       </View>
     </View>
   );
-});
+};
 
 const styles = StyleSheet.create({
   wrapper: {

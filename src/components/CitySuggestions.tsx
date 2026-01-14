@@ -18,7 +18,6 @@ interface CitySuggestionsProps {
   suggestions: CitySuggestion[];
   loading: boolean;
   onSelect: (city: CitySuggestion) => void;
-  onClose: () => void;
   top?: number;
   left?: number;
   width?: number;

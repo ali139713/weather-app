@@ -2,7 +2,7 @@
  * Main Weather Screen displaying current weather and forecast
  */
 
-import React, { useEffect, useState, useCallback, useRef } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import {
   View,
   StyleSheet,
@@ -48,7 +48,6 @@ export const WeatherScreen: React.FC = () => {
   const [suggestionsLoading, setSuggestionsLoading] = useState(false);
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [searchBarLayout, setSearchBarLayout] = useState<{ y: number; x: number; width: number; height: number } | null>(null);
-  const scrollViewRef = useRef<ScrollView>(null);
 
   useEffect(() => {
     if (!currentWeather) {
@@ -78,8 +77,6 @@ export const WeatherScreen: React.FC = () => {
     await fetchWeatherByCity(cityName);
   };
 
-  const searchBarRef = useRef<View>(null);
-
   const handleSearchBarLayout = useCallback((event: any) => {
     const { x, y, width, height } = event.nativeEvent.layout;
     setSearchBarLayout({ x, y, width, height });
@@ -100,7 +97,6 @@ export const WeatherScreen: React.FC = () => {
   const dailyForecasts = forecast ? groupForecastByDay(forecast.list) : [];
   const hourlyForecasts = forecast ? getHourlyForecast(forecast.list) : [];
 
-  // Show loading if we don't have weather data yet (either loading or waiting for initial load)
   if (!currentWeather) {
     if (error) {
       return (
@@ -121,7 +117,6 @@ export const WeatherScreen: React.FC = () => {
       style={[styles.container, { backgroundColor: theme.colors.background }]}
       edges={['top', 'left', 'right']}>
       <ScrollView
-        ref={scrollViewRef}
         style={styles.scrollView}
         contentContainerStyle={styles.scrollContent}
         refreshControl={
@@ -155,7 +150,6 @@ export const WeatherScreen: React.FC = () => {
         />
 
         <SearchBar
-          ref={searchBarRef}
           onSearch={handleSearch}
           onLayout={handleSearchBarLayout}
           onSuggestionsChange={handleSuggestionsChange}
@@ -190,7 +184,6 @@ export const WeatherScreen: React.FC = () => {
             suggestions={suggestions}
             loading={suggestionsLoading}
             onSelect={handleSelectSuggestion}
-            onClose={() => setShowSuggestions(false)}
             top={searchBarLayout.y + searchBarLayout.height + 4}
             left={searchBarLayout.x}
             width={searchBarLayout.width}
